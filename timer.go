@@ -28,15 +28,15 @@ type Timer interface {
 
 // LabeledTimer is a timer that must have label values populated before use.
 type LabeledTimer interface {
-	WithValues(labels ...string) Timer
+	WithValues(labels ...string) prometheus.Observer
 }
 
 type labeledTimer struct {
 	m *prometheus.HistogramVec
 }
 
-func (lt *labeledTimer) WithValues(labels ...string) Timer {
-	return &timer{m: lt.m.WithLabelValues(labels...)}
+func (lt *labeledTimer) WithValues(labels ...string) prometheus.Observer {
+	return lt.m.WithLabelValues(labels...)
 }
 
 func (lt *labeledTimer) Describe(c chan<- *prometheus.Desc) {
