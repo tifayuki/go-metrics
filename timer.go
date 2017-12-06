@@ -28,7 +28,7 @@ type Timer interface {
 
 // LabeledTimer is a timer that must have label values populated before use.
 type LabeledTimer interface {
-	WithValues(labels ...string) labeledTimerObserver
+	WithValues(labels ...string) *labeledTimerObserver
 }
 
 type labeledTimer struct {
@@ -39,16 +39,16 @@ type labeledTimerObserver struct {
 	m prometheus.Observer
 }
 
-func (lbo *labeledTimerObserver)Update(duration time.Duration){
+func (lbo *labeledTimerObserver) Update(duration time.Duration) {
 	lbo.m.Observe(duration.Seconds())
 }
 
-func (lbo *labeledTimerObserver)UpdateSince(since time.Time){
+func (lbo *labeledTimerObserver) UpdateSince(since time.Time) {
 	lbo.m.Observe(time.Since(since).Seconds())
 }
 
-func (lt *labeledTimer) WithValues(labels ...string) labeledTimerObserver {
-	return labeledTimerObserver{m: lt.m.WithLabelValues(labels...)}
+func (lt *labeledTimer) WithValues(labels ...string) *labeledTimerObserver {
+	return &labeledTimerObserver{m: lt.m.WithLabelValues(labels...)}
 }
 
 func (lt *labeledTimer) Describe(c chan<- *prometheus.Desc) {
